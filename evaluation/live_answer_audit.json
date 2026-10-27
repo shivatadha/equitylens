@@ -1,0 +1,55 @@
+{
+  "kind": "reviewed_live_answer_audit_v1",
+  "reviewed_at": "2026-10-27",
+  "description": "Questions and reference facts from linked annual reports. The app still fetches its own live sources; a reference fact is not injected into the research session.",
+  "cases": [
+    {
+      "id": "RIL-CASH-2025", "query": "Reliance", "market": "IN", "symbol": "RELIANCE.NS",
+      "question": "What was Reliance Industries' consolidated net cash flow from operating activities for the year ended 31 March 2025?",
+      "expected": "INR 1,78,703 crore; consolidated; FY2024-25",
+      "reference_url": "https://www.ril.com/ar2024-25/pdf/Consolidated-Financial-Statements.pdf",
+      "reference_locator": "Consolidated statement of cash flows, printed page 201",
+      "answerability": "answerable_if_live_source_covers_period"
+    },
+    {
+      "id": "RIL-REVENUE-2025", "query": "Reliance", "market": "IN", "symbol": "RELIANCE.NS",
+      "question": "What was Reliance Industries' consolidated revenue from operations after GST recovered for FY2024-25?",
+      "expected": "INR 9,80,136 crore; consolidated; FY2024-25",
+      "reference_url": "https://www.ril.com/ar2024-25/pdf/Consolidated-Financial-Statements.pdf",
+      "reference_locator": "Consolidated statement of profit and loss, printed page 197",
+      "answerability": "answerable_if_live_source_covers_period"
+    },
+    {
+      "id": "RIL-MISSING-2035", "query": "Reliance", "market": "IN", "symbol": "RELIANCE.NS",
+      "question": "What was Reliance Industries' consolidated operating cash flow for FY2035?",
+      "expected": "Insufficient evidence for a future reporting period; no figure should be stated.",
+      "reference_url": "https://www.ril.com/ar2024-25/pdf/Consolidated-Financial-Statements.pdf",
+      "reference_locator": "FY2024-25 report cannot cover FY2035",
+      "answerability": "must_abstain"
+    },
+    {
+      "id": "MSFT-REVENUE-2025", "query": "Microsoft", "market": "US", "symbol": "MSFT",
+      "question": "What was Microsoft's total revenue for fiscal 2025, in USD millions?",
+      "expected": "USD 281,724 million; year ended 30 June 2025",
+      "reference_url": "https://www.microsoft.com/investor/reports/ar25/",
+      "reference_locator": "Consolidated statements of income",
+      "answerability": "answerable_if_live_source_covers_period"
+    },
+    {
+      "id": "MSFT-CASH-2025", "query": "Microsoft", "market": "US", "symbol": "MSFT",
+      "question": "What was Microsoft's net cash from operations in fiscal 2025, in USD millions?",
+      "expected": "USD 136,162 million; year ended 30 June 2025",
+      "reference_url": "https://www.microsoft.com/investor/reports/ar25/",
+      "reference_locator": "Consolidated statements of cash flows",
+      "answerability": "answerable_if_live_source_covers_period"
+    },
+    {
+      "id": "MSFT-MISSING-2035", "query": "Microsoft", "market": "US", "symbol": "MSFT",
+      "question": "What was Microsoft's net cash from operations in fiscal 2035?",
+      "expected": "Insufficient evidence for a future reporting period; no figure should be stated.",
+      "reference_url": "https://www.microsoft.com/investor/reports/ar25/",
+      "reference_locator": "FY2025 report cannot cover FY2035",
+      "answerability": "must_abstain"
+    }
+  ]
+}

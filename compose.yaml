@@ -1,0 +1,19 @@
+name: equitylens
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: equitylens
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Run python scripts/setup.py first}
+      POSTGRES_DB: equitylens
+    ports:
+      - "127.0.0.1:55432:5432"
+    volumes:
+      - equitylens_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U equitylens -d equitylens"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+volumes:
+  equitylens_db:

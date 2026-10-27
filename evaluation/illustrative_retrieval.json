@@ -1,0 +1,29 @@
+{
+  "kind": "illustrative_synthetic_fixture",
+  "description": "Fictional examples for checking retrieval mechanics; these are not reviewed financial facts.",
+  "passages": [
+    {"id": "IN-F1", "company": "Nila Textiles", "market": "IN", "title": "Nila Textiles annual results", "text": "For the year ended 31 March 2025, consolidated revenue was INR 1,200 crore."},
+    {"id": "IN-F2", "company": "Nila Textiles", "market": "IN", "title": "Nila Textiles cash flow", "text": "Net cash generated from operating activities was INR 84 crore for the year ended 31 March 2025."},
+    {"id": "IN-F3", "company": "Nila Textiles", "market": "IN", "title": "Nila Textiles debt", "text": "Total borrowings were INR 310 crore as at 31 March 2025."},
+    {"id": "IN-N1", "company": "Nila Textiles", "market": "IN", "title": "Nila Textiles proposed factory headline", "text": "Headline reports that Nila Textiles proposed a new weaving factory; project completion was not confirmed."},
+    {"id": "US-F1", "company": "Cedar Devices", "market": "US", "title": "Cedar Devices annual report", "text": "Revenue for fiscal 2025 was USD 4.2 billion, compared with USD 3.9 billion in fiscal 2024."},
+    {"id": "US-F2", "company": "Cedar Devices", "market": "US", "title": "Cedar Devices cash flow", "text": "Net cash provided by operating activities was USD 620 million in fiscal 2025."},
+    {"id": "US-F3", "company": "Cedar Devices", "market": "US", "title": "Cedar Devices debt", "text": "Long-term debt was USD 1.1 billion at the end of fiscal 2025."},
+    {"id": "US-N1", "company": "Cedar Devices", "market": "US", "title": "Cedar Devices product headline", "text": "Headline reports Cedar Devices announced a new sensor; shipment volume was not reported."}
+  ],
+  "questions": [
+    {"id": "IN-01", "company": "Nila Textiles", "market": "IN", "question": "What was Nila Textiles consolidated revenue in the year ended March 2025?", "relevant": ["IN-F1"]},
+    {"id": "IN-02", "company": "Nila Textiles", "market": "IN", "question": "How much operating cash did Nila Textiles generate?", "relevant": ["IN-F2"]},
+    {"id": "IN-03", "company": "Nila Textiles", "market": "IN", "question": "What were Nila Textiles total borrowings in March 2025?", "relevant": ["IN-F3"]},
+    {"id": "IN-04", "company": "Nila Textiles", "market": "IN", "question": "Was Nila Textiles weaving factory completed?", "relevant": ["IN-N1"]},
+    {"id": "IN-05", "company": "Nila Textiles", "market": "IN", "question": "What funds came from day-to-day business operations?", "relevant": ["IN-F2"]},
+    {"id": "IN-06", "company": "Nila Textiles", "market": "IN", "question": "What plans were reported for manufacturing expansion?", "relevant": ["IN-N1"]},
+    {"id": "US-01", "company": "Cedar Devices", "market": "US", "question": "What was Cedar Devices fiscal 2025 revenue?", "relevant": ["US-F1"]},
+    {"id": "US-02", "company": "Cedar Devices", "market": "US", "question": "How did Cedar Devices revenue compare with fiscal 2024?", "relevant": ["US-F1"]},
+    {"id": "US-03", "company": "Cedar Devices", "market": "US", "question": "How much cash did Cedar Devices generate from operations?", "relevant": ["US-F2"]},
+    {"id": "US-04", "company": "Cedar Devices", "market": "US", "question": "What was Cedar Devices long-term debt?", "relevant": ["US-F3"]},
+    {"id": "US-05", "company": "Cedar Devices", "market": "US", "question": "What shipment volume was reported for the new sensor?", "relevant": ["US-N1"]},
+    {"id": "US-06", "company": "Cedar Devices", "market": "US", "question": "How much money came in from normal business activity?", "relevant": ["US-F2"]},
+    {"id": "US-07", "company": "Cedar Devices", "market": "US", "question": "What long-run borrowing burden did the business carry?", "relevant": ["US-F3"]}
+  ]
+}

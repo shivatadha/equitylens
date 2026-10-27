@@ -1,0 +1,27 @@
+[theme]
+font = "sans serif"
+base = "light"
+
+[theme.light]
+primaryColor = "#6351d5"
+backgroundColor = "#f5f6fb"
+secondaryBackgroundColor = "#ffffff"
+textColor = "#1c2940"
+borderColor = "#d9deeb"
+chartCategoricalColors = ["#7361e5", "#0b827b", "#dd8a20"]
+
+[theme.dark]
+primaryColor = "#ad9fff"
+backgroundColor = "#0e1627"
+secondaryBackgroundColor = "#19253a"
+textColor = "#eef2ff"
+borderColor = "#36445d"
+chartCategoricalColors = ["#b0a3ff", "#57d1be", "#ffc46b"]
+
+[server]
+port = 8501
+maxUploadSize = 25
+headless = true
+
+[browser]
+gatherUsageStats = false

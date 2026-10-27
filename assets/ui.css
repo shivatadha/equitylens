@@ -1,0 +1,149 @@
+/* Use native theme colors so menus, widgets, tables and charts switch together. */
+.stApp {
+  --ey-surface: light-dark(#ffffff, #172239);
+  --ey-subtle: light-dark(#f5f4fb, #1d2a43);
+  --ey-line: light-dark(#e1e3ef, #33425d);
+  --ey-muted: light-dark(#53627a, #bac6dd);
+  --ey-brand: light-dark(#6551cf, #b8aaff);
+  --ey-brand-soft: light-dark(#eeebfb, #2b254b);
+}
+.block-container { padding-top: 5rem; padding-bottom: 3rem; max-width: 1440px; }
+h1 { letter-spacing: -1.7px; font-size: 2.7rem !important; line-height: 1.18 !important; }
+h2 { letter-spacing: -.8px; }
+[data-testid="stCaptionContainer"] { color: inherit !important; opacity: .82; }
+[data-testid="stTextInputRootElement"], [data-baseweb="select"] > div { min-height: 48px; }
+[data-testid="stFormSubmitButton"] button { min-height: 48px; font-weight: 600; }
+/* Streamlit places this hint at the bottom of the widget. Align it to the input. */
+.stTextInput > div:has(> [data-testid="InputInstructions"]) {
+  position: absolute !important; bottom: 0 !important; top: auto !important;
+  height: 48px; right: 2.5rem !important; left: auto !important;
+  display: flex; align-items: center; pointer-events: none;
+}
+.stTextInput [data-testid="InputInstructions"] {
+  position: static !important; display: flex; align-items: center;
+  height: 100%; padding: 0; line-height: 1; color: inherit !important; opacity: .8;
+}
+.stTextInput:has([data-testid="InputInstructions"]) input { padding-right: 12rem; }
+.stTextInput { container-type: inline-size; }
+@container (max-width: 390px) {
+  .stTextInput [data-testid="InputInstructions"] span { font-size: 0; }
+  .stTextInput [data-testid="InputInstructions"]::after { content: "Enter ↵"; font-size: .75rem; }
+  input { padding-right: 6rem !important; }
+}
+.ey-kicker { font-size: .77rem; font-weight: 700; letter-spacing: .16em; margin: 0 0 .65rem; }
+.ey-compact-heading { font-size: 1.4rem; font-weight: 650; letter-spacing: -.45px; }
+.ey-hero, .ey-trading {
+  background: var(--ey-surface); border: 1px solid var(--ey-line); border-radius: 20px;
+  box-shadow: 0 12px 36px rgb(0 0 0 / 6%); color: inherit;
+}
+.ey-hero { overflow: hidden; }
+.ey-hero-top {
+  padding: 1.65rem 1.8rem; display: grid; grid-template-columns: minmax(0, 1fr) minmax(245px, 305px);
+  gap: 1.5rem; align-items: stretch;
+  background: linear-gradient(115deg, var(--ey-brand-soft), var(--ey-surface) 55%);
+}
+.ey-identity { display: flex; align-items: center; gap: 1rem; min-width: 0; }
+.ey-identity-copy { min-width: 0; }
+.ey-company-avatar {
+  flex: none; height: 58px; width: 58px; display: grid; place-items: center;
+  background: var(--ey-brand); color: var(--ey-surface); border-radius: 16px;
+  font-size: 1rem; font-weight: 750; letter-spacing: .02em;
+}
+.ey-overline { display: block; color: var(--ey-muted); font-size: .67rem; font-weight: 750; letter-spacing: .14em; }
+.ey-company-name { margin: .35rem 0 .25rem !important; font-size: clamp(1.45rem, 2.4vw, 2.05rem) !important; line-height: 1.18 !important; letter-spacing: -.035em; }
+.ey-listing { margin: 0; color: var(--ey-muted); font-size: .82rem; line-height: 1.5; }
+.ey-listing span { padding: 0 .22rem; opacity: .65; }
+.ey-quote-panel {
+  display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
+  min-width: 0; padding: 1rem 1.15rem; border: 1px solid var(--ey-line); border-radius: 14px;
+  background: var(--ey-surface);
+}
+.ey-quote-value { display: block; margin: .18rem 0 .3rem; font-size: clamp(1.7rem, 2.8vw, 2.25rem); line-height: 1.18; font-weight: 710; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+.ey-price-change { display: inline-flex; border-radius: 999px; padding: .18rem .52rem; font-size: .78rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.ey-price-change.is-up { color: light-dark(#146a42, #8fe0ae); background: light-dark(#e7f5eb, #193c35); }
+.ey-price-change.is-down { color: light-dark(#a03245, #ff9ca7); background: light-dark(#fcebed, #462732); }
+.ey-price-change.is-flat { color: var(--ey-muted); background: var(--ey-subtle); }
+.ey-quote-time { margin-top: .5rem; color: var(--ey-muted); font-size: .74rem; }
+.ey-hero-content { display: grid; grid-template-columns: minmax(0, 2.25fr) minmax(225px, 1fr); gap: 1.45rem; padding: 1.35rem 1.8rem 1.6rem; }
+.ey-overview-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .7rem; }
+.ey-overview-fact { display: flex; flex-direction: column; min-width: 0; padding: .95rem 1rem; border: 1px solid var(--ey-line); border-radius: 12px; background: var(--ey-subtle); }
+.ey-overview-label { color: var(--ey-muted); font-size: .74rem; font-weight: 600; line-height: 1.35; }
+.ey-overview-value { margin-top: .42rem; font-size: clamp(1.06rem, 1.5vw, 1.35rem); line-height: 1.24; font-weight: 690; letter-spacing: -.02em; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.ey-overview-note { margin-top: auto; padding-top: .55rem; color: var(--ey-muted); font-size: .68rem; line-height: 1.45; }
+.ey-business-panel { min-width: 0; padding: .3rem 0 .3rem 1.4rem; border-left: 1px solid var(--ey-line); }
+.ey-business-description { margin: .65rem 0 1rem; font-size: .96rem; font-weight: 600; line-height: 1.55; }
+.ey-business-meta { display: flex; justify-content: space-between; gap: .7rem; padding: .55rem 0; border-top: 1px solid var(--ey-line); font-size: .74rem; }
+.ey-business-meta span { color: var(--ey-muted); }
+.ey-business-meta strong { text-align: right; font-weight: 600; }
+.ey-profile-link { display: inline-block; margin-top: .65rem; color: var(--ey-brand) !important; font-size: .77rem; font-weight: 700; text-decoration: none !important; }
+.ey-profile-link:hover { text-decoration: underline !important; }
+.ey-hero-footer { display: flex; justify-content: space-between; gap: 1rem; padding: .8rem 1.8rem; border-top: 1px solid var(--ey-line); color: var(--ey-muted); font-size: .69rem; line-height: 1.45; }
+.ey-trading { padding: 1.55rem 1.75rem; margin-top: .25rem; }
+.ey-trading-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+.ey-trading-header h2 { margin: .3rem 0 .15rem; font-size: 1.5rem; letter-spacing: -.03em; }
+.ey-trading-header p { margin: 0; color: var(--ey-muted); font-size: .78rem; }
+.ey-market-status { border: 1px solid var(--ey-line); border-radius: 999px; padding: .34rem .65rem; color: var(--ey-muted); font-size: .69rem; font-weight: 600; white-space: nowrap; }
+.ey-trading-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .7rem; margin-top: 1.45rem; }
+.ey-trading-grid .ey-overview-fact { background: transparent; border-radius: 0; border: 0; border-left: 1px solid var(--ey-line); padding: .2rem 1rem; }
+.ey-trading-grid .ey-overview-fact:first-child { border-left: 0; padding-left: 0; }
+.ey-trading-grid .ey-overview-value { font-size: clamp(1.05rem, 1.65vw, 1.42rem); }
+.ey-trading-range { display: flex; justify-content: space-between; gap: 1rem; margin-top: 1.4rem; padding: .9rem 0; border-top: 1px solid var(--ey-line); font-size: .82rem; }
+.ey-trading-range span { color: var(--ey-muted); }
+.ey-trading-range strong { font-weight: 650; font-variant-numeric: tabular-nums; }
+.ey-trading-footer { display: flex; justify-content: space-between; gap: 1rem; color: var(--ey-muted); font-size: .7rem; line-height: 1.5; }
+.ey-workspace-note { margin-top: 3rem; padding: 1rem; border: 1px solid var(--ey-line); border-radius: 12px; color: var(--ey-muted); font-size: .78rem; line-height: 1.9; }
+.ey-workspace-note strong { font-weight: 600; }
+.ey-section-heading { padding: .6rem 0 1rem; }
+.ey-section-kicker { color: var(--ey-brand); font-size: .7rem; font-weight: 700; letter-spacing: .16em; }
+.ey-section-heading h2 { margin: .4rem 0 .6rem; font-size: 1.7rem; }
+.ey-section-heading p { color: var(--ey-muted); max-width: 740px; line-height: 1.65; margin: 0; }
+.ey-news-grid, .ey-evidence-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin: .7rem 0 1.6rem; }
+.ey-news-card, .ey-evidence-card { background: var(--ey-surface); border: 1px solid var(--ey-line); border-radius: 16px; padding: 1.35rem; display: flex; flex-direction: column; min-width: 0; box-shadow: 0 3px 12px rgb(0 0 0 / 3%); }
+.ey-evidence-card { border-top: 3px solid var(--ey-brand); }
+.ey-card-top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: .9rem; }
+.ey-pill { background: var(--ey-brand-soft); color: var(--ey-brand); display: inline-flex; align-items: center; border-radius: 30px; padding: .3rem .65rem; font-size: .69rem; font-weight: 650; letter-spacing: .015em; }
+.ey-pill::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: currentColor; margin-right: .4rem; }
+.ey-source-id { color: var(--ey-muted); font-size: .72rem; font-family: ui-monospace, monospace; }
+.ey-news-card h3, .ey-evidence-card h3 { font-size: 1.03rem !important; line-height: 1.6; letter-spacing: -.1px; margin: 0 0 .85rem; padding: 0; font-weight: 650; }
+.ey-card-copy { font-size: .91rem; line-height: 1.8; margin: 0 0 1rem; overflow-wrap: anywhere; }
+.ey-fact-value { font-size: 1.95rem; line-height: 1.3; font-weight: 650; letter-spacing: -.7px; font-variant-numeric: tabular-nums; margin: -.1rem 0 .65rem; }
+.ey-fact-note { color: var(--ey-muted); font-size: .75rem; line-height: 1.6; margin: -.35rem 0 .85rem; }
+.ey-news-card footer, .ey-evidence-card footer { margin-top: auto; padding-top: 1rem; display: flex; gap: 1rem; justify-content: space-between; align-items: center; border-top: 1px solid var(--ey-line); }
+.ey-publisher { font-size: .77rem; font-weight: 600; color: var(--ey-muted); }
+.ey-publisher small { display: block; font-size: .7rem; font-weight: 400; margin-top: .35rem; }
+.ey-card-link { color: var(--ey-brand) !important; font-weight: 650; font-size: .77rem; text-decoration: none !important; white-space: nowrap; }
+.ey-card-link:hover { text-decoration: underline !important; }
+.ey-card-link:focus-visible, .ey-card-audit summary:focus-visible { outline: 2px solid var(--ey-brand); outline-offset: 4px; border-radius: 3px; }
+.ey-card-audit { border-top: 1px solid var(--ey-line); margin-top: 1rem; padding-top: .85rem; font-size: .76rem; line-height: 1.8; color: var(--ey-muted); }
+.ey-card-audit summary { cursor: pointer; font-weight: 500; }
+.ey-card-audit p { overflow-wrap: anywhere; margin: .75rem 0; }
+[data-testid="stMetricValue"] { font-variant-numeric: tabular-nums; }
+[data-testid="stTabs"] [role="tablist"] { gap: .35rem; }
+[data-testid="stTabs"] [role="tab"] { padding: .7rem .8rem; font-weight: 550; border-radius: 9px 9px 0 0; }
+[data-testid="stTabs"] [role="tab"][aria-selected="true"] { background: var(--ey-brand-soft); color: var(--ey-brand); }
+[data-testid="stDataFrame"] { border-radius: 10px; }
+@media (max-width: 900px) {
+  .block-container { padding-top: 4.5rem; }
+  .ey-hero-top { grid-template-columns: 1fr; }
+  .ey-quote-panel { display: grid; grid-template-columns: 1fr auto; column-gap: 1rem; }
+  .ey-quote-panel .ey-overline, .ey-quote-panel .ey-quote-time { grid-column: 1 / -1; }
+  .ey-quote-value { margin-bottom: 0; }
+  .ey-price-change { align-self: center; }
+  .ey-hero-content { grid-template-columns: 1fr; }
+  .ey-business-panel { border-left: 0; border-top: 1px solid var(--ey-line); padding: 1rem 0 0; }
+  .ey-trading-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ey-trading-grid .ey-overview-fact:nth-child(3) { border-left: 0; padding-left: 0; }
+  .ey-news-grid, .ey-evidence-grid { grid-template-columns: 1fr; }
+  h1 { font-size: 2rem !important; }
+}
+@media (max-width: 480px) {
+  .ey-hero-top, .ey-hero-content { padding-left: 1.1rem; padding-right: 1.1rem; }
+  .ey-hero-footer, .ey-trading-footer { flex-direction: column; gap: .3rem; }
+  .ey-hero-footer { padding-left: 1.1rem; padding-right: 1.1rem; }
+  .ey-overview-grid { grid-template-columns: 1fr; }
+  .ey-trading { padding: 1.15rem; }
+  .ey-trading-header { flex-direction: column; }
+  .ey-trading-grid { gap: .9rem; }
+  .ey-trading-grid .ey-overview-fact { border-left: 0; padding: .2rem 0; }
+  .ey-trading-range { flex-direction: column; gap: .25rem; }
+}

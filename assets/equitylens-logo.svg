@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 68" role="img" aria-label="EquityLens — market research">
+  <rect width="280" height="68" rx="15" fill="#282047"/>
+  <rect x="8" y="8" width="52" height="52" rx="13" fill="#8b78ef"/>
+  <circle cx="31" cy="31" r="14" stroke="white" stroke-width="3" fill="none"/>
+  <path d="m42 42 9 9M23 36v-6m8 6V24m8 12V21" stroke="white" stroke-width="3" stroke-linecap="round"/>
+  <text x="75" y="33" fill="white" font-family="Segoe UI,Arial,sans-serif" font-size="25" font-weight="650">EquityLens</text>
+  <text x="77" y="51" fill="#d0c7f6" font-family="Segoe UI,Arial,sans-serif" font-size="10" letter-spacing="2">MARKET RESEARCH</text>
+</svg>

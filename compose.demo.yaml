@@ -1,0 +1,35 @@
+# Invite-only staging behind a host-managed HTTPS reverse proxy.
+services:
+  api:
+    image: equitylens-demo:local
+    build:
+      context: .
+      dockerfile: Dockerfile.live
+    command: python -m equitylens.cli serve
+    env_file:
+      - .env
+    environment:
+      EQUITYLENS_BIND_HOST: 0.0.0.0
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8001/health', timeout=5)"]
+      interval: 10s
+      timeout: 6s
+      retries: 8
+    restart: unless-stopped
+
+  ui:
+    image: equitylens-demo:local
+    build:
+      context: .
+      dockerfile: Dockerfile.live
+    command: python -m streamlit run ui.py --server.address=0.0.0.0 --server.port=8501 --server.headless=true
+    environment:
+      API_BASE_URL: http://api:8001
+      EQUITYLENS_REQUIRE_DEMO_PASSWORD: "1"
+      EQUITYLENS_DEMO_PASSWORD: ${EQUITYLENS_DEMO_PASSWORD:?Set a strong invite password in the deployment environment}
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${EQUITYLENS_UI_PORT:-8501}:8501"
+    restart: unless-stopped
