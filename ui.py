@@ -234,7 +234,11 @@ with st.container(key="workspace_toolbar"):
 with st.expander("Find or change company", expanded=not bool(st.session_state.get("research_id"))):
     with st.form("find_company"):
         col1, col2, col3 = st.columns([5, 2, 1.5], vertical_alignment="bottom")
-        query = col1.text_input("Company name or ticker", placeholder="Tesla, Reliance, Infosys, Microsoft…")
+        query = col1.text_input(
+            "Company name or ticker",
+            placeholder="Reliance, RELIANCE.NS, MSFT…",
+            help="If company-name search is unavailable, try the exact exchange ticker: RELIANCE.NS, INFY.NS, or MSFT.",
+        )
         market_label = col2.selectbox("Market", ["Auto-detect", "India", "United States"])
         submitted = col3.form_submit_button("Find company", width="stretch", type="primary")
 

@@ -27,4 +27,10 @@ LLM_API_MODE = "chat_completions"
 
 `LLM_*` entries are optional. `SEC_USER_AGENT` is also optional and should contain your own identifiable contact value if you enable SEC requests. The invitation password is a small-demo gate, not per-user authentication; Community Cloud app privacy settings may provide another layer of access control. In-process sessions are limited to one app process and disappear on restart. Public Yahoo and RSS integrations remain best-effort sources. The hosted app may need a smaller research workload if it reaches Community Cloud's changing memory or CPU limits.
 
+## If company search fails on Cloud
+
+Try an exact exchange ticker such as `RELIANCE.NS`, `INFY.NS`, or `MSFT`. When the company-name search request fails, an exact ticker can be verified against fresh chart metadata. The app still requires a matching symbol, supported exchange, equity instrument type, and company name; it does not substitute a stored company list. This recovery needs the chart endpoint to be available and does not guarantee that every subsequent research source is reachable.
+
+The error message now distinguishes HTTP 429 (provider rate limiting), HTTP 401/403 (provider rejection), other HTTP failures, and connection failures. For rate limits, wait before retrying. Changing the Groq key does not repair stock-provider access. Cloud logs include only the upstream HTTP status and error class, without request URLs, keys, or response bodies.
+
 Official deployment details: [file organization](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/file-organization), [dependencies](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/app-dependencies), [secrets](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/secrets-management), and [deploy steps](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/deploy).

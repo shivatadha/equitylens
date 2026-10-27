@@ -80,12 +80,23 @@ class PublicSources:
 
     async def lookup(self, query, market="AUTO"):
         async with self.client() as client:
-            body = await request(
-                client,
-                "GET",
-                "https://query1.finance.yahoo.com/v1/finance/search",
-                params={"q": query, "quotesCount": 12, "newsCount": 0},
-            )
+            try:
+                body = await request(
+                    client,
+                    "GET",
+                    "https://query1.finance.yahoo.com/v1/finance/search",
+                    params={"q": query, "quotesCount": 12, "newsCount": 0},
+                )
+            except httpx.HTTPError:
+                # A name-search outage need not prevent verification of an exact
+                # ticker. Fetch fresh metadata; never manufacture a company match.
+                try:
+                    matches = await self.lookup_ticker(client, query, market)
+                except (httpx.HTTPError, ValueError, TypeError, AttributeError):
+                    matches = []
+                if matches:
+                    return matches
+                raise
         payload = json.loads(body)
         results = []
         seen = set()
@@ -112,6 +123,43 @@ class PublicSources:
                 )
             )
         return results[:8]
+
+    async def lookup_ticker(self, client, query, market):
+        symbol = query.strip().upper()
+        if not re.fullmatch(r"(?:[A-Z]{1,5}(?:[.\-][A-Z])?|[A-Z0-9][A-Z0-9\-]{0,19}\.(?:NS|BO))", symbol):
+            return []
+        body = await request(
+            client,
+            "GET",
+            f"https://query1.finance.yahoo.com/v8/finance/chart/{quote(symbol, safe='')}",
+            params={"range": "5d", "interval": "1d"},
+        )
+        payload = json.loads(body)
+        result = next(iter(payload.get("chart", {}).get("result") or []), {})
+        meta = result.get("meta") or {}
+        exchange = meta.get("exchangeName", "")
+        country = (
+            "IN" if exchange in {"NSI", "NSE", "BSE", "BOM"} else "US" if exchange in US_EXCHANGES else None
+        )
+        name = meta.get("longName") or meta.get("shortName")
+        if (
+            meta.get("symbol", "").upper() != symbol
+            or meta.get("instrumentType") != "EQUITY"
+            or not name
+            or not country
+            or market not in {"AUTO", country}
+        ):
+            return []
+        return [
+            CompanyMatch(
+                symbol=symbol,
+                name=name,
+                exchange=meta.get("fullExchangeName") or exchange,
+                market=country,
+                provider="Yahoo Finance chart · exact ticker verification",
+                retrieved_at=utcnow(),
+            )
+        ]
 
     async def financials(self, company):
         now = utcnow()

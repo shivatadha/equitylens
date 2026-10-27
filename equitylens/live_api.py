@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from contextlib import asynccontextmanager
 
 import httpx
@@ -61,11 +62,26 @@ def create_app(settings=None, service=None):
         return JSONResponse({"detail": str(exc)}, status_code=422)
 
     @app.exception_handler(httpx.HTTPError)
-    async def upstream(_request, _exc):
+    async def upstream(_request, exc):
+        status = exc.response.status_code if isinstance(exc, httpx.HTTPStatusError) else None
+        # Never log exception strings, URLs, headers, or response bodies: those
+        # can contain a provider key. Only fixed diagnostic fields are retained.
+        logging.getLogger(__name__).warning(
+            "Live source request failed: status=%s error=%s", status, type(exc).__name__
+        )
+        if status == 429:
+            detail = "Live company search is unavailable: the data provider is rate limiting requests (HTTP 429). Wait before retrying."
+        elif status in {401, 403}:
+            detail = f"Live company search is unavailable: the data provider rejected the hosted request (HTTP {status})."
+        elif status is not None:
+            detail = f"Live company search is unavailable: the data provider returned HTTP {status}."
+        else:
+            detail = "Live company search is unavailable: the app could not reach the data provider."
+        detail += (
+            " Try an exact ticker such as RELIANCE.NS or MSFT. No stored company records were substituted."
+        )
         return JSONResponse(
-            {
-                "detail": "Live company search is unavailable. Retry later; no stored company records were substituted."
-            },
+            {"detail": detail},
             status_code=502,
         )
 

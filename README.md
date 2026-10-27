@@ -8,7 +8,7 @@
 
 EquityLens turns a company lookup into a research workspace: market snapshots, daily prices, financial history, dated news, reported developments, source coverage, and questions over retrieved evidence. It distinguishes provider observations, official feed summaries, extracted passages, and unsupported claims so readers can inspect the basis for an answer.
 
-**Status:** advanced portfolio prototype. The application runs locally and has a Streamlit Community Cloud entrypoint. Public Cloud deployment has not yet been verified. Live sources have variable availability, and financial figures are not all independently reconciled.
+**Status:** advanced portfolio prototype. The [hosted demo](https://equitylens-in.streamlit.app/) is online with an invitation-password gate. Hosted company search has shown a provider-access failure; complete research on Cloud is still being verified. Live sources have variable availability, and financial figures are not all independently reconciled.
 
 [Architecture and measured results](docs/PORTFOLIO-CASE-STUDY.md) · [Deploy to Streamlit Cloud](docs/STREAMLIT-CLOUD.md) · [Configure API answers](docs/API-MODELS.md) · [Evaluation methodology](docs/EVALUATION.md)
 
@@ -81,6 +81,8 @@ Open **http://127.0.0.1:8501**. The API schema is at **http://127.0.0.1:8001/doc
 
 Try searching for `Microsoft`, `Reliance`, or another covered equity. Confirm its listing, run research, inspect Stock & price, and ask about the retrieved evidence. API answers require a configured key and model; browsing and retrieval work without them.
 
+If company-name search is unavailable, try an exact ticker such as `RELIANCE.NS` or `MSFT`. The app can verify it using fresh chart metadata when that endpoint remains available. It validates the symbol, exchange, instrument type, and company name before returning a match.
+
 ## Streamlit Community Cloud
 
 1. Select this GitHub repository and **`cloud_app.py`** as the main file.
@@ -118,7 +120,7 @@ Citation validation does not prove semantic support for every sentence. Indian o
 
 ## Verification
 
-The latest local run passed **169 tests**. CI runs Ruff, regression tests, and offline keyword-retrieval gates without provider keys. Tests cover source isolation, session expiry, financial formatting, chart bounds, daily hover details, model validation, and the Cloud invitation gate.
+The latest local run passed **177 tests**. CI runs Ruff, regression tests, and offline keyword-retrieval gates without provider keys. Tests cover source isolation, session expiry, financial formatting, chart bounds, daily hover details, model validation, and the Cloud invitation gate.
 
 ```powershell
 .\.venv\Scripts\python.exe -m pytest -q
