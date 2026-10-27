@@ -1,4 +1,5 @@
-# Streamlit Community Cloud's single-process live app; Python 3.12.
+# Streamlit Community Cloud portfolio demo; Python 3.12.
+# Public sample mode needs no data/model API key; explicit live mode remains available.
 altair==6.3.0
 beautifulsoup4==4.15.0
 fastapi==0.162.0

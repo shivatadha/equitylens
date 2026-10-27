@@ -67,7 +67,13 @@ def hero_html(report):
     quote = stock["quote"] if stock else {}
     price = money(quote.get("price"), currency) if stock else "Not available"
     movement = decimal(quote.get("daily_change"))
-    movement_class = "is-up" if movement is not None and movement > 0 else "is-down" if movement is not None and movement < 0 else "is-flat"
+    movement_class = (
+        "is-up"
+        if movement is not None and movement > 0
+        else "is-down"
+        if movement is not None and movement < 0
+        else "is-flat"
+    )
     change = ""
     if movement is not None:
         change = (
@@ -75,15 +81,27 @@ def hero_html(report):
             + movement_class
             + '">'
             + _text(("+" if movement > 0 else "") + money(movement, currency))
-            + (" · " + _text(percent(quote["daily_change_pct"], signed=True)) if quote.get("daily_change_pct") is not None else "")
+            + (
+                " · " + _text(percent(quote["daily_change_pct"], signed=True))
+                if quote.get("daily_change_pct") is not None
+                else ""
+            )
             + "</span>"
         )
-    quote_time = published_time(quote["timestamp"]) if quote.get("timestamp") else "Quote time unavailable"
+    quote_time = (
+        published_time(quote["timestamp"])
+        if quote.get("timestamp")
+        else day(quote["as_of_date"]) + " · trading date only"
+        if quote.get("as_of_date")
+        else "Quote time unavailable"
+    )
     initials = "".join(word[:1] for word in company["name"].split()[:2]).upper() or "?"
     market = "India" if company["market"] == "IN" else "United States"
     description = profile.get("description")
-    business = shorten(" ".join(description.split()), width=190, placeholder="…") if description else (
-        company.get("industry") or "Business description unavailable from current sources."
+    business = (
+        shorten(" ".join(description.split()), width=190, placeholder="…")
+        if description
+        else (company.get("industry") or "Business description unavailable from current sources.")
     )
     sector = company.get("sector") or "Not provided"
     news_count = sum("news" in item["categories"] for item in report["evidence"])
@@ -110,7 +128,9 @@ def hero_html(report):
         + _text(company["exchange"])
         + " <span>·</span> "
         + _text(market)
-        + '</p></div></div><div class="ey-quote-panel"><span class="ey-overline">LAST REGULAR-SESSION PRICE</span>'
+        + '</p></div></div><div class="ey-quote-panel"><span class="ey-overline">'
+        + _text(quote.get("label", "LAST REGULAR-SESSION PRICE"))
+        + "</span>"
         '<strong class="ey-quote-value">'
         + _text(price)
         + "</strong>"
@@ -129,7 +149,7 @@ def hero_html(report):
         + "</strong></div>"
         + website_html
         + '</aside></div><div class="ey-hero-footer">'
-        '<span>Financial figures are dated provider observations. Equity value is an estimate.</span>'
+        "<span>Financial figures are dated provider observations. Equity value is an estimate.</span>"
         "</div></section>"
     )
 
@@ -138,8 +158,9 @@ def trading_html(stock):
     quote, currency = stock["quote"], stock["currency"]
     low, high = money(quote.get("day_low"), currency), money(quote.get("day_high"), currency)
     day_range = f"{low} – {high}" if low != "Not available" and high != "Not available" else "Not available"
-    week_low, week_high = money(quote.get("fifty_two_week_low"), currency), money(
-        quote.get("fifty_two_week_high"), currency
+    week_low, week_high = (
+        money(quote.get("fifty_two_week_low"), currency),
+        money(quote.get("fifty_two_week_high"), currency),
     )
     week_range = (
         f"{week_low} – {week_high}"
@@ -151,7 +172,15 @@ def trading_html(stock):
         "outside_scheduled_regular_session": "Outside scheduled session",
         "unknown": "Trading schedule unavailable",
     }.get(quote["market_status"], "Trading schedule unavailable")
-    quote_time = published_time(quote["timestamp"]) if quote.get("timestamp") else "Quote time unavailable"
+    if stock.get("data_mode") == "demo":
+        status = "Synthetic sample data"
+    quote_time = (
+        published_time(quote["timestamp"])
+        if quote.get("timestamp")
+        else day(quote["as_of_date"]) + " · trading date only"
+        if quote.get("as_of_date")
+        else "Quote time unavailable"
+    )
     metrics = "".join(
         [
             _fact(
@@ -171,7 +200,7 @@ def trading_html(stock):
     return (
         '<section class="ey-trading" aria-label="Trading snapshot">'
         '<div class="ey-trading-header"><div><span class="ey-overline">MARKET ACTIVITY</span>'
-        '<h2>Trading snapshot</h2><p>'
+        "<h2>Trading snapshot</h2><p>"
         + _text(stock["exchange"])
         + " · "
         + _text(currency)
@@ -185,6 +214,14 @@ def trading_html(stock):
         + _text(week_range)
         + '</strong></div><div class="ey-trading-footer"><span>Quote: '
         + _text(quote_time)
-        + '</span><span>Provider delay not supplied · Regular session only</span></div>'
+        + "</span><span>"
+        + (
+            "Synthetic sample prices · Not market data"
+            if stock.get("data_mode") == "demo"
+            else "End-of-day data · No intraday quote"
+            if quote.get("as_of_date")
+            else "Provider delay not supplied · Regular session only"
+        )
+        + "</span></div>"
         "</section>"
     )

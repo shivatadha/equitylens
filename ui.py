@@ -25,7 +25,7 @@ from equitylens.presentation import (
 from equitylens.ui_cards import formatted_excerpt, news_cards_html, passage_cards_html, published_time
 
 API = os.getenv("API_BASE_URL", "http://127.0.0.1:8001")
-st.set_page_config(page_title="EquityLens | Live company research", page_icon="◈", layout="wide")
+st.set_page_config(page_title="EquityLens | Company research", page_icon="◈", layout="wide")
 st.markdown(
     "<style>" + (Path(__file__).parent / "assets" / "ui.css").read_text(encoding="utf-8") + "</style>",
     unsafe_allow_html=True,
@@ -43,7 +43,7 @@ def require_demo_access():
     if st.session_state.get("demo_authenticated"):
         return
     st.title("EquityLens demo")
-    st.caption("Enter the invitation password to use live company research.")
+    st.caption("Enter the invitation password to open the research workspace.")
     with st.form("demo_access"):
         supplied = st.text_input("Demo password", type="password")
         submitted = st.form_submit_button("Enter demo")
@@ -115,7 +115,11 @@ def show_stock(stock):
             )
         else:
             st.info("Prices are unavailable for this period and price basis.")
-        st.caption("Daily bars; the latest bar may still be forming. No intraday prices are implied.")
+        st.caption(
+            "Synthetic weekday sample prices; no actual security, market session, or intraday feed."
+            if stock.get("data_mode") == "demo"
+            else "Daily bars; the latest bar may still be forming. No intraday prices are implied."
+        )
     if stock["performance"]:
         st.subheader("Price performance")
         st.caption(
@@ -184,6 +188,13 @@ except (httpx.HTTPError, ValueError):
     st.error("Start the API: .venv\\Scripts\\python.exe -m equitylens.cli serve")
     st.stop()
 
+DEMO = capabilities.get("data_mode") == "demo"
+if DEMO:
+    st.info(
+        "PUBLIC PORTFOLIO DEMO — All companies, prices, financial figures, and headlines are synthetic examples. "
+        "No live market data or model API is used. Explore a sample company below."
+    )
+
 st.logo(
     str(Path(__file__).parent / "assets/equitylens-logo.svg"),
     size="large",
@@ -219,23 +230,36 @@ with st.container(key="workspace_toolbar"):
                 "Preferences apply to your next research run. Project and industry discovery uses at least 30 days."
             )
     st.caption(
-        "Live prices, financials and reported developments · "
+        (
+            "Synthetic sample prices, financials and scenarios · "
+            if DEMO
+            else "Live prices, financials and reported developments · "
+        )
         + days_label
         + " · "
         + depth.capitalize()
         + " research"
     )
 
-with st.expander("Find or change company", expanded=not bool(st.session_state.get("research_id"))):
+with st.expander(
+    "Find or change sample company" if DEMO else "Find or change company",
+    expanded=not bool(st.session_state.get("research_id")),
+):
+    if DEMO:
+        st.caption("Try Demo India (DEMO-IN) or Demo US (DEMO-US). These companies are fictional.")
     with st.form("find_company"):
         col1, col2, col3 = st.columns([5, 2, 1.5], vertical_alignment="bottom")
         query = col1.text_input(
             "Company name or ticker",
-            placeholder="Reliance, RELIANCE.NS, MSFT…",
-            help="If company-name search is unavailable, try the exact exchange ticker: RELIANCE.NS, INFY.NS, or MSFT.",
+            placeholder="Demo India, Demo US, DEMO-IN…" if DEMO else "Reliance, RELIANCE.NS, MSFT…",
+            help="Only the labelled fictional catalog is searched in demo mode."
+            if DEMO
+            else "If company-name search is unavailable, try the exact exchange ticker: RELIANCE.NS, INFY.NS, or MSFT.",
         )
         market_label = col2.selectbox("Market", ["Auto-detect", "India", "United States"])
-        submitted = col3.form_submit_button("Find company", width="stretch", type="primary")
+        submitted = col3.form_submit_button(
+            "Find sample" if DEMO else "Find company", width="stretch", type="primary"
+        )
 
     if submitted:
         if len(query.strip()) < 2:
@@ -256,7 +280,9 @@ with st.expander("Find or change company", expanded=not bool(st.session_state.ge
                 st.session_state["matches"] = matches
                 if not matches:
                     st.info(
-                        "No supported equity matches found. Try the full name or ticker and select its market."
+                        "No sample matches found. Search for Demo India or Demo US; real companies are available only in live mode."
+                        if DEMO
+                        else "No supported equity matches found. Try the full name or ticker and select its market."
                     )
             except (httpx.HTTPError, ValueError) as exc:
                 st.error(str(exc))
@@ -268,7 +294,7 @@ with st.expander("Find or change company", expanded=not bool(st.session_state.ge
             format_func=lambda c: f"{c['name']} · {c['symbol']} · {c['exchange']} · {c['market']}",
         )
         st.caption("Confirm the listing: similar names can refer to different companies.")
-        if st.button("Research this company now", type="primary"):
+        if st.button("Explore sample report" if DEMO else "Research this company now", type="primary"):
             body = {
                 "company_token": selected["company_token"],
                 "news_days": days,
@@ -276,15 +302,24 @@ with st.expander("Find or change company", expanded=not bool(st.session_state.ge
             }
             try:
                 with st.status(
-                    "Fetching stock prices, financials, news, and reported developments…", expanded=True
+                    "Preparing the synthetic demonstration…"
+                    if DEMO
+                    else "Fetching stock prices, financials, news, and reported developments…",
+                    expanded=True,
                 ) as status:
                     st.write(
-                        "Sources are contacted for this request. Unavailable sections will be identified."
+                        "Loading generated examples; no external data or model API is called."
+                        if DEMO
+                        else "Sources are contacted for this request. Unavailable sections will be identified."
                     )
                     result = call("POST", "/live/research", json=body)
                     for step in result["report"]["workflow"]:
                         st.write("✓ " + step)
-                    status.update(label="Live research assembled", state="complete", expanded=False)
+                    status.update(
+                        label="Sample workspace assembled" if DEMO else "Live research assembled",
+                        state="complete",
+                        expanded=False,
+                    )
                 clear_research()
                 st.session_state["research_id"] = result["session_id"]
                 st.session_state["research_token"] = result["session_token"]
@@ -297,7 +332,11 @@ with st.expander("Find or change company", expanded=not bool(st.session_state.ge
 @st.fragment(run_every=30)
 def show_report():
     if not st.session_state.get("research_id"):
-        st.info("Find a company to start. Information is retrieved when you request research.")
+        st.info(
+            "Choose a fictional sample company to explore the charts, financials, sources, and evidence search."
+            if DEMO
+            else "Find a company to start. Information is retrieved when you request research."
+        )
         return
     if time.time() >= st.session_state.get("expires_at", 0):
         clear_research()
@@ -312,9 +351,7 @@ def show_report():
     st.divider()
     company = report["company"]
     company_summary(report)
-    st.caption(
-        f"Research snapshot assembled {published_time(report['researched_at'])}."
-    )
+    st.caption(f"Research snapshot assembled {published_time(report['researched_at'])}.")
     news_items = [e for e in report["evidence"] if "news" in e["categories"]]
     tabs = dict(
         zip(
@@ -395,7 +432,9 @@ def show_report():
     with tabs["Outlook & questions"]:
         if report["analysis"]:
             st.caption(
-                "AI interpretation from supplied evidence. Citation IDs are checked; semantic support still requires source review."
+                "Extractive demonstration: a sample passage is copied with its citation. This is synthetic evidence, not an LLM answer."
+                if DEMO
+                else "AI interpretation from supplied evidence. Citation IDs are checked; semantic support still requires source review."
             )
             for section in report["analysis"]:
                 st.subheader(section["title"])
@@ -417,7 +456,13 @@ def show_report():
         with st.form("followup"):
             question = st.text_input("Ask about this session’s evidence")
             api_ready = capabilities.get("generation_configured", False)
-            asked = st.form_submit_button("Ask with API model" if api_ready else "Find relevant evidence")
+            asked = st.form_submit_button(
+                "Ask about sample evidence"
+                if DEMO
+                else "Ask with API model"
+                if api_ready
+                else "Find relevant evidence"
+            )
         if asked and len(question.strip()) >= 3:
             try:
                 with st.spinner("Checking the current session…"):
@@ -444,7 +489,11 @@ def show_report():
                 for claim in section["claims"]
                 for source_id in claim["source_ids"]
             }
-            displayed = [match for match in answer["matches"] if match["id"] in cited_ids] if cited_ids else answer["matches"]
+            displayed = (
+                [match for match in answer["matches"] if match["id"] in cited_ids]
+                if cited_ids
+                else answer["matches"]
+            )
             passage_cards(displayed, "followup", report)
     with tabs["Sources & coverage"]:
         if st.button("Clear current research"):
@@ -453,11 +502,27 @@ def show_report():
         reconciliation = report.get("filing_reconciliation", [])
         if reconciliation:
             st.subheader("SEC 10-K comparison")
-            st.caption("Matched annual USD amounts are compared by period. Accounting concept and reporting basis still need review.")
+            st.caption(
+                "Matched annual USD amounts are compared by period. Accounting concept and reporting basis still need review."
+            )
             for item in reconciliation:
-                label = item["metric"].replace("Total", "Total ").replace("Operating", "Operating ").replace("Net", "Net ")
-                status = "Matches" if item["status"] == "amount_matches" else "Differs" if item["status"] == "amount_differs" else "No matching provider period"
-                st.write(f"{label} · {item['period_end']}: {status} · SEC {item['sec_value']} USD" + (f" · provider {item['provider_value']} USD" if item["provider_value"] else ""))
+                label = (
+                    item["metric"]
+                    .replace("Total", "Total ")
+                    .replace("Operating", "Operating ")
+                    .replace("Net", "Net ")
+                )
+                status = (
+                    "Matches"
+                    if item["status"] == "amount_matches"
+                    else "Differs"
+                    if item["status"] == "amount_differs"
+                    else "No matching provider period"
+                )
+                st.write(
+                    f"{label} · {item['period_end']}: {status} · SEC {item['sec_value']} USD"
+                    + (f" · provider {item['provider_value']} USD" if item["provider_value"] else "")
+                )
                 st.link_button(f"Inspect 10-K source for {label}", item["filing_url"])
         st.subheader("Coverage gaps")
         for gap in report["gaps"]:

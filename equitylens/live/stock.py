@@ -417,7 +417,11 @@ def stock_evidence(company, stock):
         )
 
     quote_data = stock["quote"]
-    as_of = f"Quote as of {quote_data['exchange_timestamp']} ({stock['exchange_timezone']}); currency {stock['currency']}."
+    as_of = (
+        f"Price observation dated {quote_data['as_of_date']}; exact quote time is not supplied; currency {stock['currency']}."
+        if quote_data.get("as_of_date")
+        else f"Quote as of {quote_data['exchange_timestamp']} ({stock['exchange_timezone']}); currency {stock['currency']}."
+    )
     add(
         "M1",
         "stock price and trading volume",

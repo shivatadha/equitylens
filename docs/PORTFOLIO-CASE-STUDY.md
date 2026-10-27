@@ -21,7 +21,7 @@ Research sessions are held in process memory with a default 30-minute expiry and
 
 ## What was measured
 
-- **Regression:** 179 tests passed with Ruff clean on 27 October 2026.
+- **Regression:** 181 tests passed with Ruff clean on 27 October 2026.
 - **Live flow evaluation:** The read-only `scripts/evaluate_live_flow.py --require-official-nse` run completed for Tesla, Reliance, and RBL Bank. All three returned financial history and retrieved operating-cash-flow evidence. RBL Bank had one exact-ticker NSE announcement and one linked PDF body read; Tesla and Reliance had no source body read in that run. The runner disables answer-model calls and deletes each temporary session.
 - **Offline synthetic retrieval:** 13 fictional questions; BM25 found required evidence within five results on 11/13, hybrid on 13/13. This demonstrates a paraphrase improvement in a tiny fixture, not real-world accuracy.
 - **Source-backed filing pilot:** Nine answerable questions from dated Reliance and Microsoft annual reports, plus two missing-period questions. Both retrieval modes found the required pilot passages within five results for all nine answerable questions; hybrid ranked the first relevant passage first in 9/9, BM25 in 8/9.
@@ -40,5 +40,9 @@ The live public Yahoo and Google RSS integrations are best-effort sources. NSE's
 
 An [invite-only demo configuration](DEMO.md) is now available for a single host with an HTTPS reverse proxy. It has not been publicly deployed, so it does not change the deployment limitation above.
 The [Streamlit Community Cloud entrypoint](STREAMLIT-CLOUD.md) runs the API inside the Streamlit process and has a tested password gate. Cloud deployment has not yet been performed.
+
+### Public sample deployment update
+
+The hosted page and server health endpoint were subsequently reached successfully, but Yahoo company lookup returned HTTP 429 from Community Cloud. Exact-ticker recovery did not establish usable hosted access. The public Cloud entrypoint now defaults to a separate synthetic demonstration with fictional Indian and US companies; the underlying live-source restriction remains unresolved. Sample mode performs real keyword retrieval and cited extraction over generated passages without a market-data service or model API. End-to-end tests exercise both sample markets with external HTTP requests blocked, and a Streamlit AppTest covers unlocking, sample lookup, report rendering, and the sample-price label. See [demo-data methodology](DEMO-DATA.md).
 
 Use `python -m pytest -q` and `python -m ruff check .` for local regression. Run `python scripts/evaluate_retrieval.py --dataset evaluation/filing_pilot_2025.json --mode hybrid` for the offline filing-pilot retrieval check. `scripts/evaluate_live_flow.py --require-official-nse` checks current request-time sources without saving reports or calling the answer model. `scripts/evaluate_answers.py` requires `--allow-paid` and a configured API key; it defaults to one case. The GitHub Actions workflow runs tests, linting, and keyword-only retrieval gates without any provider key.

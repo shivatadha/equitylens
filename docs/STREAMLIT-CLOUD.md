@@ -4,16 +4,20 @@ Use `cloud_app.py` as the entrypoint when you are ready to publish EquityLens fr
 
 ## Repository preparation
 
+**The Cloud entrypoint defaults to public sample mode.** Search for `Demo India` or `Demo US` to explore fictional companies, generated price charts and financials, sample scenarios, and cited extractive answers. A visible banner and source labels identify the data as synthetic. This mode calls no data provider or model API, so no Groq or EODHD key is required. See [sample-data methodology](DEMO-DATA.md).
+
+Keep `EQUITYLENS_DEMO_PASSWORD` in Cloud Secrets. After updating from the former live deployment, reboot the app once. If an older real-company report remains in a browser session, clear it and choose a sample company. To explicitly restore live sources, set `EQUITYLENS_DATA_MODE = "live"` in Cloud Secrets and reboot; Yahoo availability and HTTP 429 behavior still apply. `MARKET_DATA_PROVIDER` is not a supported setting in this release, and no EODHD price adapter has been deployed.
+
 Push the project files to GitHub with `cloud_app.py`, `ui.py`, `equitylens/`, `assets/`, `requirements.txt`, and `packages.txt` at the repository root. `.env`, `.streamlit/secrets.toml`, `data/`, `.cache/`, and `.venv/` must stay out of Git. The root `requirements.txt` is the Community Cloud dependency file; `packages.txt` installs the Linux `libgomp1` library used by the embedding runtime. Select **Python 3.12** during deployment.
 
-The cloud app downloads the general `BAAI/bge-small-en-v1.5` embedding weights on first use if they are absent. The weights live in the instance cache; company text and vectors remain in expiring memory. If the download or model load fails, the app labels retrieval as keyword-only. Cold starts may be slow, and a Community Cloud restart clears research sessions.
+Sample mode uses keyword retrieval and does not download model weights. In explicit live mode, the cloud app can download the general `BAAI/bge-small-en-v1.5` embedding weights on first use if absent. Those weights live in the instance cache; company text and vectors remain in expiring memory. Failed embedding loads fall back to labelled keyword retrieval. A Community Cloud restart clears research sessions.
 
 ## Cloud setup
 
 1. In Streamlit Community Cloud, create an app from the GitHub repository and select `cloud_app.py` as its main file.
 2. In **Advanced settings**, choose Python 3.12 and add root-level TOML secrets. Root-level secrets are exposed as environment variables to the app. At minimum, set a long random `EQUITYLENS_DEMO_PASSWORD`. Keep it out of the repository.
-3. If you want optional Groq answers, add your own `LLM_API_KEY`, `LLM_MODEL`, `LLM_API_BASE_URL`, and `LLM_API_MODE`. For Groq's Chat Completions-compatible endpoint, use `https://api.groq.com/openai/v1` and `chat_completions`. Do not paste credentials into source files, issues, screenshots, or chat.
-4. Deploy, enter the invitation password, and test company lookup, research, retrieval, and one cited answer. Review Cloud logs and the app's resource usage. Avoid broad sharing until the live sources and model rate limits behave reliably.
+3. For public sample mode, no additional secrets are needed. Optional Groq settings apply only to explicit live mode: `EQUITYLENS_DATA_MODE = "live"`. Keep any credentials out of source files and chat.
+4. Deploy, enter the invitation password, search for `Demo India` or `Demo US`, and click **Explore sample report**. Check the synthetic-data banner, chart hover, financials, retrieval, and extractive sample answers.
 
 Example secret names (replace the placeholders in the **Cloud Secrets** editor, never in Git):
 

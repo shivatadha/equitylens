@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     extraction_timeout_seconds: int = 60
     tavily_api_key: str = ""
     eodhd_api_key: str = ""
+    equitylens_data_mode: Literal["live", "demo"] = "live"
     llm_api_key: SecretStr = SecretStr("")
     llm_model: str = Field(default="", max_length=150, pattern=r"^(?:[A-Za-z0-9][A-Za-z0-9_./:\-]{0,149})?$")
     llm_api_base_url: str = "https://api.openai.com/v1"

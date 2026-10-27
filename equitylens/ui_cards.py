@@ -16,6 +16,7 @@ EVIDENCE_LABELS = {
     "pdf_excerpt": "PDF excerpt",
     "provider_profile": "Business profile",
     "official_feed_summary": "Official exchange feed summary",
+    "demo_scenario": "Sample scenario",
 }
 
 

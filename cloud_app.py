@@ -14,6 +14,9 @@ except FileNotFoundError:
 
 os.environ["EQUITYLENS_BACKEND"] = "embedded"
 os.environ["EQUITYLENS_REQUIRE_DEMO_PASSWORD"] = "1"
-os.environ.setdefault("RAG_DOWNLOAD_MODEL_IF_MISSING", "1")
+os.environ.setdefault("EQUITYLENS_DATA_MODE", "demo")
+os.environ.setdefault(
+    "RAG_DOWNLOAD_MODEL_IF_MISSING", "0" if os.environ["EQUITYLENS_DATA_MODE"] == "demo" else "1"
+)
 
 runpy.run_path(str(Path(__file__).with_name("ui.py")), run_name="__main__")

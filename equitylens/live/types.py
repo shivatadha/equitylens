@@ -38,8 +38,14 @@ class Evidence(BaseModel):
     categories: list[str] = Field(default_factory=list)
     content: str = ""
     evidence_level: Literal[
-        "headline", "search_excerpt", "page_excerpt", "pdf_excerpt", "structured_fact", "provider_profile",
-        "official_feed_summary"
+        "headline",
+        "search_excerpt",
+        "page_excerpt",
+        "pdf_excerpt",
+        "structured_fact",
+        "provider_profile",
+        "official_feed_summary",
+        "demo_scenario",
     ] = "headline"
     locator: str = ""
 

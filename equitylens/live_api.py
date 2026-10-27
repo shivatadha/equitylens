@@ -105,21 +105,29 @@ def create_app(settings=None, service=None):
 
     @app.get("/live/capabilities")
     def capabilities():
+        demo = settings.equitylens_data_mode == "demo"
         return {
-            "lookup": "Public Yahoo Finance search (unofficial)",
-            "financials": "Public Yahoo Finance financial history (unofficial)",
-            "stock": "Dated quotes, daily history and calculated valuations from public Yahoo Finance endpoints (unofficial)",
-            "news": "Google News RSS headlines (unofficial)",
+            "data_mode": settings.equitylens_data_mode,
+            "lookup": "Fictional sample company catalog"
+            if demo
+            else "Public Yahoo Finance search (unofficial)",
+            "financials": "Generated demonstration figures"
+            if demo
+            else "Public Yahoo Finance financial history (unofficial)",
+            "stock": "Synthetic daily price series"
+            if demo
+            else "Dated quotes, daily history and calculated valuations from public Yahoo Finance endpoints (unofficial)",
+            "news": "Fictional sample scenarios" if demo else "Google News RSS headlines (unofficial)",
             "nse_announcements": "Official NSE rolling announcements RSS for exact .NS ticker matches",
-            "web_research_configured": bool(settings.tavily_api_key),
-            "profile_api_configured": bool(settings.eodhd_api_key),
-            "sec_filings_configured": sec_configured(settings.sec_user_agent),
-            "generation_configured": settings.generation_configured(),
+            "web_research_configured": bool(settings.tavily_api_key) and not demo,
+            "profile_api_configured": bool(settings.eodhd_api_key) and not demo,
+            "sec_filings_configured": sec_configured(settings.sec_user_agent) and not demo,
+            "generation_configured": demo or settings.generation_configured(),
             "generation_api_key_configured": bool(settings.llm_api_key.get_secret_value().strip()),
-            "generation_provider": "Frontier-model API",
-            "generation_api_mode": settings.llm_api_mode,
+            "generation_provider": "Extractive sample answer; no model API" if demo else "Frontier-model API",
+            "generation_api_mode": "demo" if demo else settings.llm_api_mode,
             "generation_api_base_url": settings.llm_api_base_url,
-            "generation_model": settings.llm_model or None,
+            "generation_model": "sample-extractive" if demo else settings.llm_model or None,
             "retention_seconds": settings.research_ttl_seconds,
         }
 

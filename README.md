@@ -8,7 +8,9 @@
 
 EquityLens turns a company lookup into a research workspace: market snapshots, daily prices, financial history, dated news, reported developments, source coverage, and questions over retrieved evidence. It distinguishes provider observations, official feed summaries, extracted passages, and unsupported claims so readers can inspect the basis for an answer.
 
-**Status:** advanced portfolio prototype. The [hosted demo](https://equitylens-in.streamlit.app/) is online with an invitation-password gate. Hosted company search has shown a provider-access failure; complete research on Cloud is still being verified. Live sources have variable availability, and financial figures are not all independently reconciled.
+**Status:** advanced portfolio prototype. The [hosted demo](https://equitylens-in.streamlit.app/) uses clearly labelled synthetic data for fictional Indian and US companies. Search for **Demo India** or **Demo US**. Demo mode needs only the invitation password and calls no market-data or model API. Its charts, financials, scenarios, and extractive answers are examples, not actual research. [Sample-data methodology](docs/DEMO-DATA.md)
+
+The separate live mode retains request-time source integrations. Yahoo returned HTTP 429 from the hosted environment, so public sample mode was added for a reproducible portfolio demonstration. It does not repair that source restriction or establish live-data reliability.
 
 [Architecture and measured results](docs/PORTFOLIO-CASE-STUDY.md) · [Deploy to Streamlit Cloud](docs/STREAMLIT-CLOUD.md) · [Configure API answers](docs/API-MODELS.md) · [Evaluation methodology](docs/EVALUATION.md)
 
@@ -88,8 +90,8 @@ If company-name search is unavailable, try an exact ticker such as `RELIANCE.NS`
 1. Select this GitHub repository and **`cloud_app.py`** as the main file.
 2. Choose **Python 3.12** in Advanced settings.
 3. Add a long random **`EQUITYLENS_DEMO_PASSWORD`** through Cloud Secrets.
-4. Add optional model settings through Cloud Secrets if you want generated answers.
-5. Deploy and verify search, research, charts, retrieval, and a cited answer on the hosted URL.
+4. Leave the default public sample mode enabled; no data or model API key is needed. Search for `Demo India` or `Demo US`.
+5. Deploy and verify sample search, charts, financials, retrieval, and a cited extractive answer on the hosted URL.
 
 The root `requirements.txt` supplies Cloud dependencies; `packages.txt` supplies the embedding runtime's Linux library. This deployment uses the embedded backend, so no separate FastAPI host or Docker Compose service is needed.
 
@@ -102,7 +104,7 @@ LLM_API_BASE_URL = "https://api.groq.com/openai/v1"
 LLM_API_MODE = "chat_completions"
 ```
 
-Only the demo password is required by the Cloud entrypoint. Model settings are optional. Keep `.env`, `.streamlit/secrets.toml`, keys, model caches, and local research data out of Git. Cloud restarts clear sessions; first-use model loading can be slow. See the [complete Cloud guide](docs/STREAMLIT-CLOUD.md).
+Only the demo password is required by the Cloud entrypoint. The `LLM_*` settings above apply only after explicitly selecting `EQUITYLENS_DATA_MODE = "live"`; sample mode ignores model and data-provider keys. Keep `.env`, `.streamlit/secrets.toml`, keys, model caches, and local research data out of Git. Cloud restarts clear sessions. See the [complete Cloud guide](docs/STREAMLIT-CLOUD.md).
 
 ## Data sources and limits
 
@@ -120,7 +122,7 @@ Citation validation does not prove semantic support for every sentence. Indian o
 
 ## Verification
 
-The latest local run passed **179 tests**. CI runs Ruff, regression tests, and offline keyword-retrieval gates without provider keys. Tests cover source isolation, session expiry, financial formatting, chart bounds, daily hover details, model validation, and the Cloud invitation gate.
+The latest local run passed **181 tests**. CI runs Ruff, regression tests, and offline keyword-retrieval gates without provider keys. Tests cover source isolation, session expiry, financial formatting, chart bounds, daily hover details, model validation, and the Cloud invitation gate.
 
 ```powershell
 .\.venv\Scripts\python.exe -m pytest -q

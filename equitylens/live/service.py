@@ -38,11 +38,17 @@ def generation_failure(exc):
     if isinstance(exc, httpx.HTTPStatusError):
         status = exc.response.status_code
         if status in {401, 403}:
-            return "authentication", "The model API rejected the key or model access. Check server configuration."
+            return (
+                "authentication",
+                "The model API rejected the key or model access. Check server configuration.",
+            )
         if status == 429:
             return "rate_limit", "The model API rate limit was reached. Wait before researching again."
         if status in {400, 404, 422}:
-            return "request_rejected", "The model API rejected this request or model format. Check model compatibility."
+            return (
+                "request_rejected",
+                "The model API rejected this request or model format. Check model compatibility.",
+            )
         return "provider_error", "The model API returned an error. Try again later."
     if isinstance(exc, (TimeoutError, httpx.TimeoutException)):
         return "timeout", "The model API timed out before completing the outlook."
@@ -348,10 +354,11 @@ def direct_financial_observation(question, matches):
         if not period or not display or period.group(1)[:4] != year.group():
             continue
         amount, unit = display.groups()
-        if (re.search(r"\bUSD\b|\bdollars?\b", question, re.IGNORECASE) and "USD" not in unit) or (
-            re.search(r"\bINR\b|\brupees?\b|₹", question, re.IGNORECASE) and "INR" not in unit
-        ) or (re.search(r"\bmillions?\b", question, re.IGNORECASE) and "million" not in unit) or (
-            re.search(r"\bcrores?\b", question, re.IGNORECASE) and "crore" not in unit
+        if (
+            (re.search(r"\bUSD\b|\bdollars?\b", question, re.IGNORECASE) and "USD" not in unit)
+            or (re.search(r"\bINR\b|\brupees?\b|₹", question, re.IGNORECASE) and "INR" not in unit)
+            or (re.search(r"\bmillions?\b", question, re.IGNORECASE) and "million" not in unit)
+            or (re.search(r"\bcrores?\b", question, re.IGNORECASE) and "crore" not in unit)
         ):
             continue
         return [
@@ -391,6 +398,12 @@ class ResearchService:
         from langgraph.graph import END, START, StateGraph
 
         self.settings = settings
+        demo = settings.equitylens_data_mode == "demo"
+        if demo and provider is None:
+            from .demo import DemoEmbedder, DemoSources
+
+            provider = DemoSources()
+            rag = rag or RagPipeline(settings, embedder=DemoEmbedder())
         self.provider = provider or PublicSources(settings=settings)
         self.tokens = CompanyTokens()
         self.sessions = SessionStore(ttl=settings.research_ttl_seconds)
@@ -427,7 +440,11 @@ class ResearchService:
             tasks["research"] = self.provider.web_research(company, state["tavily"], state["depth"])
         if company.market == "US" and sec_configured(self.settings.sec_user_agent):
             tasks["filings"] = self.provider.sec_filings(company)
-        if company.market == "IN" and company.symbol.endswith(".NS") and hasattr(self.provider, "nse_announcements"):
+        if (
+            company.market == "IN"
+            and company.symbol.endswith(".NS")
+            and hasattr(self.provider, "nse_announcements")
+        ):
             tasks["nse_announcements"] = self.provider.nse_announcements(company, days)
         values = await asyncio.gather(*(bounded_call(task) for task in tasks.values()))
         collected = dict(zip(tasks, values, strict=True))
@@ -451,6 +468,7 @@ class ResearchService:
 
     async def compose(self, state):
         gaps = []
+        demo = self.settings.equitylens_data_mode == "demo"
         stock = state["collected"].get("stock")
         if stock:
             gaps.extend(stock["gaps"])
@@ -461,28 +479,34 @@ class ResearchService:
             gaps.append("No financial history available from the live source for this company.")
         if not any("news" in e.categories for e in state["evidence"]):
             gaps.append(f"No matching, dated news found in the last {state['days']} days.")
-        if not state["tavily"]:
+        if not state["tavily"] and not demo:
             gaps.append(
                 "Web research API is not configured. Company announcements, management guidance, and full business research are incomplete; news-feed items are headlines only."
             )
-        if state["company"].market == "US":
+        if state["company"].market == "US" and not demo:
             if not sec_configured(self.settings.sec_user_agent):
-                gaps.append("SEC filing facts are disabled. Set SEC_USER_AGENT to a project name and real contact email.")
+                gaps.append(
+                    "SEC filing facts are disabled. Set SEC_USER_AGENT to a project name and real contact email."
+                )
             elif not (state["collected"].get("filings") or {}).get("facts"):
                 gaps.append("No supported annual 10-K SEC XBRL facts were retrieved for this company.")
-        else:
-            gaps.append("Official Indian financial filing facts are not integrated; provider figures remain unreconciled.")
+        elif not demo:
+            gaps.append(
+                "Official Indian financial filing facts are not integrated; provider figures remain unreconciled."
+            )
             if state["company"].symbol.endswith(".NS") and not state["collected"].get("nse_announcements"):
-                gaps.append("No ticker-matched NSE announcements were found in the rolling RSS window; older filings may exist.")
+                gaps.append(
+                    "No ticker-matched NSE announcements were found in the rolling RSS window; older filings may exist."
+                )
         sections = []
         context = state["rag_bundle"]["context"]
         if state["rag_bundle"]["summary"]["notice"]:
             gaps.append(state["rag_bundle"]["summary"]["notice"])
-        if state["rag_bundle"]["summary"].get("body_sources_read") == 0:
+        if state["rag_bundle"]["summary"].get("body_sources_read") == 0 and not demo:
             gaps.append(
                 "No full company article or filing body was read for this report; news and project coverage may rely on headlines or excerpts."
             )
-        attempted = self.settings.generation_configured(state["model"]) and bool(context)
+        attempted = (demo or self.settings.generation_configured(state["model"])) and bool(context)
         failure_code = ""
         failure_message = ""
         if attempted:
@@ -584,6 +608,17 @@ class ResearchService:
                 "Which competitive or regulatory changes could weaken the business?",
             ],
         }
+        report["data_mode"] = "demo" if demo else "live"
+        if demo:
+            report["generation"]["model"] = "sample-extractive"
+            report["generation"]["api_mode"] = "demo"
+            report["source_notes"] = [
+                "Public portfolio demonstration: all companies, prices, financial figures, and scenarios in this report are synthetic.",
+                "No market-data API, news feed, filing service, or answer-model API is called in demo mode.",
+                "Questions use real keyword retrieval over generated sample passages. Extractive sample answers copy a retrieved passage with its citation; they are not LLM output.",
+                "Sample dates and weekday bars do not reproduce actual exchange sessions or company reporting dates.",
+            ]
+            report["workflow"][0] = "Loaded labelled synthetic demonstration fixtures"
         return {"report": report}
 
     async def build_rag(self, state):
@@ -595,6 +630,10 @@ class ResearchService:
             state["depth"],
             stock=state["collected"].get("stock"),
         )
+        if self.settings.equitylens_data_mode == "demo":
+            bundle["summary"]["notice"] = (
+                "Public demo uses keyword retrieval over synthetic evidence; live mode also supports local embeddings."
+            )
         return {"rag_bundle": bundle}
 
     async def research(self, request):
@@ -612,7 +651,9 @@ class ResearchService:
                         "eodhd": request.eodhd_api_key.get_secret_value()
                         if request.eodhd_api_key
                         else self.settings.eodhd_api_key,
-                        "model": request.llm_model or self.settings.llm_model,
+                        "model": "sample-extractive"
+                        if self.settings.equitylens_data_mode == "demo"
+                        else request.llm_model or self.settings.llm_model,
                     },
                     config={"recursion_limit": 8},
                 ),
@@ -667,8 +708,9 @@ class ResearchService:
             }
         evidence = as_context(matches)
         sections = []
-        chosen_model = model or self.settings.llm_model
-        attempted = self.settings.generation_configured(chosen_model) and bool(evidence)
+        demo = self.settings.equitylens_data_mode == "demo"
+        chosen_model = "sample-extractive" if demo else model or self.settings.llm_model
+        attempted = (demo or self.settings.generation_configured(chosen_model)) and bool(evidence)
         failure_code = ""
         failure_message = ""
         if attempted:
