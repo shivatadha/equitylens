@@ -120,7 +120,7 @@ Citation validation does not prove semantic support for every sentence. Indian o
 
 ## Verification
 
-The latest local run passed **177 tests**. CI runs Ruff, regression tests, and offline keyword-retrieval gates without provider keys. Tests cover source isolation, session expiry, financial formatting, chart bounds, daily hover details, model validation, and the Cloud invitation gate.
+The latest local run passed **179 tests**. CI runs Ruff, regression tests, and offline keyword-retrieval gates without provider keys. Tests cover source isolation, session expiry, financial formatting, chart bounds, daily hover details, model validation, and the Cloud invitation gate.
 
 ```powershell
 .\.venv\Scripts\python.exe -m pytest -q

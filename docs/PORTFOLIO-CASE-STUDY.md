@@ -21,7 +21,7 @@ Research sessions are held in process memory with a default 30-minute expiry and
 
 ## What was measured
 
-- **Regression:** 177 tests passed with Ruff clean on 27 October 2026.
+- **Regression:** 179 tests passed with Ruff clean on 27 October 2026.
 - **Live flow evaluation:** The read-only `scripts/evaluate_live_flow.py --require-official-nse` run completed for Tesla, Reliance, and RBL Bank. All three returned financial history and retrieved operating-cash-flow evidence. RBL Bank had one exact-ticker NSE announcement and one linked PDF body read; Tesla and Reliance had no source body read in that run. The runner disables answer-model calls and deletes each temporary session.
 - **Offline synthetic retrieval:** 13 fictional questions; BM25 found required evidence within five results on 11/13, hybrid on 13/13. This demonstrates a paraphrase improvement in a tiny fixture, not real-world accuracy.
 - **Source-backed filing pilot:** Nine answerable questions from dated Reliance and Microsoft annual reports, plus two missing-period questions. Both retrieval modes found the required pilot passages within five results for all nine answerable questions; hybrid ranked the first relevant passage first in 9/9, BM25 in 8/9.

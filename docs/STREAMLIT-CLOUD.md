@@ -29,6 +29,8 @@ LLM_API_MODE = "chat_completions"
 
 ## If company search fails on Cloud
 
+If the page shows new UI controls but still displays an older error message, use **Reboot app** in the Community Cloud dashboard, then refresh the browser and unlock the demo again. A page refresh can retain an existing cached backend instance. The embedded service cache now includes a digest of the backend Python source files; it reuses a service for ordinary UI reruns and replaces it when that source revision changes. A full reboot also reloads imported modules. Backend replacement or reboot clears the temporary research sessions.
+
 Try an exact exchange ticker such as `RELIANCE.NS`, `INFY.NS`, or `MSFT`. When the company-name search request fails, an exact ticker can be verified against fresh chart metadata. The app still requires a matching symbol, supported exchange, equity instrument type, and company name; it does not substitute a stored company list. This recovery needs the chart endpoint to be available and does not guarantee that every subsequent research source is reachable.
 
 The error message now distinguishes HTTP 429 (provider rate limiting), HTTP 401/403 (provider rejection), other HTTP failures, and connection failures. For rate limits, wait before retrying. Changing the Groq key does not repair stock-provider access. Cloud logs include only the upstream HTTP status and error class, without request URLs, keys, or response bodies.

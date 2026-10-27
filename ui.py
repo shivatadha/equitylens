@@ -9,7 +9,7 @@ from pathlib import Path
 import httpx
 import streamlit as st
 
-from equitylens.embedded_client import EmbeddedClient
+from equitylens.cloud_runtime import backend_revision, embedded_client
 from equitylens.overview_cards import hero_html, trading_html
 from equitylens.presentation import (
     actions_table,
@@ -60,7 +60,7 @@ require_demo_access()
 
 def call(method, path, **kwargs):
     response = (
-        embedded_client().request(method, path, **kwargs)
+        embedded_client(backend_revision()).request(method, path, **kwargs)
         if os.getenv("EQUITYLENS_BACKEND") == "embedded"
         else httpx.request(method, API + path, timeout=195, **kwargs)
     )
@@ -71,11 +71,6 @@ def call(method, path, **kwargs):
             message = "The backend returned an unexpected response."
         raise ValueError(str(message))
     return response.json()
-
-
-@st.cache_resource(show_spinner=False)
-def embedded_client():
-    return EmbeddedClient()
 
 
 def auth():
